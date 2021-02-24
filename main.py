@@ -970,7 +970,5 @@ if __name__ == '__main__':
                  text='A critical system failure has occured. Your data should be intact, but this program must close now\n\nExitcode: ' + exitCode)
 
 
-    #newBranch
-    def deleteMeFunc(input):
-        print('Useless fools!')
+
 
