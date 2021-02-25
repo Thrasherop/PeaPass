@@ -961,13 +961,11 @@ if __name__ == '__main__':
     try:
         exitCode = GUI()
     except Exception as e:
-        py.alert(title='Error',
-                 text='A critical system failure has occured. Your data should be intact, but this program must close now\n\nError:' + str(e))
+        py.alert(title='Error', text='A critical system failure has occured. Your data should be intact, but this program must close now\n\nError:' + str(e))
         exitCode = 4
 
     if exitCode != 0 and exitCode != 10:
-        py.alert(title='Error',
-                 text='A critical system failure has occured. Your data should be intact, but this program must close now\n\nExitcode: ' + exitCode)
+        py.alert(title='Error', text='A critical system failure has occured. Your data should be intact, but this program must close now\n\nExitcode: ' + str(exitCode))
 
 
 
