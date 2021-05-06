@@ -81,7 +81,6 @@ def nukeDatabase():
 
     return 0
 
-
 def passToKey(password):
     """
     Returns PBKDF2 key as a bytes object
@@ -103,6 +102,9 @@ def passToKey(password):
 
     key = base64.urlsafe_b64encode(kdf.derive(password))  # Can only use kdf once
 
+    # nukes password
+    nuke(password)
+
     return key
 
 
@@ -122,8 +124,8 @@ def encrypt(key, string):
     enString = encryptedBytes.decode()
 
     # Nukes the plaintext string
-    # nuke(string)
-    # del string
+    nuke(string)
+    del string
 
     return enString
 
@@ -153,6 +155,10 @@ def decrypt(key, string):
     # so that a string is returned
     finalMessage = decrypted.decode()
 
+    # Nukes sensitive vars
+    nuke(key)
+    del key
+
     return finalMessage
 
 
@@ -167,8 +173,9 @@ def argon2Hash(string):
                         type=argon2.Type.ID)
     hash = ph.hash(string.encode())
 
-    # nuke(string)
-    # del string
+    # nukes sensitive info
+    nuke(string)
+    del string
 
     return hash
 
@@ -185,9 +192,10 @@ def hash(string):
 
     finalHash = sanitize(newHash)
 
-    # Nukes inputed var in case its sensitive
-    # nuke(string)
-    # del string
+    # Nuking variables right here means that the inputted strings
+    # Are destroyed on a global basis. this causes issues since we
+    # Still need these Vars. So don't nuke em
+
 
     return finalHash
 
@@ -220,11 +228,6 @@ def sanitize(string):
     sanStr = sanStr.replace(">", "!bb!!")
     sanStr = sanStr.replace("|", "!bbb!")
 
-    # nukes inputted string in
-    # case its sensitive data
-    # nuke(string)
-    # del string
-
     return sanStr
 
 
@@ -253,10 +256,6 @@ def reverseSanitize(inStr):
     sanStr = sanStr.replace("!bb!!", ">")
     sanStr = sanStr.replace("!bbb!", "|")
 
-    # nukes inputted string in
-    # case its sensitive data
-    ##nuke(string)
-    # del string
 
     return sanStr
 
@@ -373,7 +372,7 @@ def addPassword():
         # Add an option to overwrite old keyword with new password
 
         keyword = py.prompt(title='Invalid keyword',
-                            text='That keyword is already in the database. Please shoose a different one')
+                            text='That keyword is already in the database. Please choose a different one')
 
         if keyword == None:
             return 0
