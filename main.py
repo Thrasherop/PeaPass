@@ -4,6 +4,7 @@ import pyautogui as py
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from shutil import copyfile
+import ctypes, sys
 
 # Modules for passwordToKey()
 import base64
@@ -25,6 +26,14 @@ import ctypes
 
 
 directory = "C:\\.PeaPass\\"
+
+
+def is_admin():
+    # Credit: https://stackoverflow.com/questions/130763/request-uac-elevation-from-within-a-python-script
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
 
 def nuke(var_to_nuke):
@@ -842,8 +851,6 @@ def deleteDatabase():
     return exitCode
 
 
-
-
 def exportDatabase():
 
     confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
@@ -871,26 +878,27 @@ def exportDatabase():
 
     try:
 
-        import ctypes, sys
-
-        def is_admin():
-            try:
-                return ctypes.windll.shell32.IsUserAnAdmin()
-            except:
-                return False
-
         if is_admin():
-            pass
+            thisDirectory = directory.replace('\\', '/')
+            copyfile(thisDirectory, filename)
+
         # Code of your program here
         else:
             # Re-run the program with admin rights
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
+                                                            "select allow when prompted, then return to this menu",
+                                      buttons=['Okay', 'Cancel'])
+
+            if confirmation is None:
+                return 0
+            elif confirmation == 'Cancel':
+                return 10
+            elif confirmation == 'Okay':
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            else:
+                return 10
 
 
-        thisDirectory = directory.replace('\\', '/')
-        print(thisDirectory)
-        print(filename)
-        copyfile(thisDirectory, filename)
 
     except Exception as e:
         py.alert(text="Something went wrong and files couldn't be exported \n\nError: " + str(e), title='PeaPass')
@@ -975,6 +983,20 @@ def GUI():
     # plaintext password
     nuke(inPassword)
     del inPassword
+
+    # If the program has been run as admin, it may be
+    # because the user was attempting to export database
+    # so this checks and asks if the user was trying to
+    # do that
+    if is_admin():
+        exportPrompt = py.confirm(title='PeaPass', text='We have detected admin access. '
+                                                        'Would you like to export your database?',
+                                  buttons=['Yes I would like to export database', 'No, continue to main menu'])
+
+        if exportPrompt is None:
+            return 0
+        elif exportPrompt == 'Yes I would like to export database':
+            exportDatabase()
 
     # Manages user menu
     while True:
