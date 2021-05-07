@@ -909,6 +909,64 @@ def exportDatabase():
     return 10
 
 
+def exportDatabase():
+
+    confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
+
+    if confirmation == None:
+        return 0
+    elif confirmation == 'OK':
+        # Passes to exit the elif chain
+        pass
+    else:
+        return 10
+
+    #Gets path for export
+    Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+    filename = askdirectory()
+
+    if filename is None:
+        py.alert(text='No destination selected', title='PeaPass')
+        return 10
+
+    if not os.path.exists(filename):
+        py.alert(text='Something went wrong: path does not exist', title='PeaPass')
+        return 10
+
+
+    try:
+
+        if is_admin():
+            thisDirectory = directory.replace('\\', '/')
+            copyfile(thisDirectory, filename)
+
+        # Code of your program here
+        else:
+            # Re-run the program with admin rights
+            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
+                                                            "select allow when prompted, then return to this menu",
+                                      buttons=['Okay', 'Cancel'])
+
+            if confirmation is None:
+                return 0
+            elif confirmation == 'Cancel':
+                return 10
+            elif confirmation == 'Okay':
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            else:
+                return 10
+
+
+
+    except Exception as e:
+        py.alert(text="Something went wrong and files couldn't be exported \n\nError: " + str(e), title='PeaPass')
+        return 10
+
+    py.alert(text="Database should be exported to " + filename, title='PeaPass')
+
+    return 10
+
+
 def databaseOptions():
     """
     Starts database options
@@ -988,15 +1046,16 @@ def GUI():
     # because the user was attempting to export database
     # so this checks and asks if the user was trying to
     # do that
-    if is_admin():
-        exportPrompt = py.confirm(title='PeaPass', text='We have detected admin access. '
-                                                        'Would you like to export your database?',
-                                  buttons=['Yes I would like to export database', 'No, continue to main menu'])
 
-        if exportPrompt is None:
-            return 0
-        elif exportPrompt == 'Yes I would like to export database':
-            exportDatabase()
+    # if is_admin():
+    #     exportPrompt = py.confirm(title='PeaPass', text='We have detected admin access. '
+    #                                                     'Would you like to export your database?',
+    #                               buttons=['Yes I would like to export database', 'No, continue to main menu'])
+    #
+    #     if exportPrompt is None:
+    #         return 0
+    #     elif exportPrompt == 'Yes I would like to export database':
+    #         exportDatabase()
 
     # Manages user menu
     while True:
