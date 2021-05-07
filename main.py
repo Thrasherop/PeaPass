@@ -1,9 +1,6 @@
 # Misc imports
-import cryptography
 import os
-import hashlib
 import pyautogui as py
-from time import sleep
 import subprocess
 
 # Modules for passwordToKey()
@@ -18,15 +15,12 @@ from cryptography.fernet import Fernet
 # Modules for hashing
 import argon2
 from argon2 import PasswordHasher
-
 import bcrypt
 
 # Modules for overwriting memory (nuke function)
 import sys
 import ctypes
 
-
-# Tutorial: https://nitratine.net/blog/post/encryption-and-decryption-in-python/
 
 directory = "C:\\.PeaPass\\"
 
