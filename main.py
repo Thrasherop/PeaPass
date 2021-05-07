@@ -82,6 +82,7 @@ def nukeDatabase():
 
     return 0
 
+
 def passToKey(password):
     """
     Returns PBKDF2 key as a bytes object
