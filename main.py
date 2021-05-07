@@ -853,6 +853,41 @@ def deleteDatabase():
 
 def exportDatabase():
 
+    print('export called')
+
+    try:
+
+        print('inside try')
+        if is_admin():
+            print('is admin')
+            pass
+
+        # Code of your program here
+        else:
+
+            print('not admin')
+
+            # Re-run the program with admin rights
+            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
+                                                            "select allow when prompted, then return to this menu",
+                                      buttons=['Okay', 'Cancel'])
+
+            if confirmation is None:
+                return 0
+            elif confirmation == 'Cancel':
+                return 10
+            elif confirmation == 'Okay':
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+                return 0
+            else:
+                return 10
+
+    except Exception as e:
+        py.alert(title='PeaPass', text='Could not export files: \n\nError: ' + str(e))
+        return 10
+
+
+
     confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
 
     if confirmation == None:
@@ -875,34 +910,8 @@ def exportDatabase():
         py.alert(text='Something went wrong: path does not exist', title='PeaPass')
         return 10
 
-
-    try:
-
-        if is_admin():
-            thisDirectory = directory.replace('\\', '/')
-            copyfile(thisDirectory, filename)
-
-        # Code of your program here
-        else:
-            # Re-run the program with admin rights
-            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
-                                                            "select allow when prompted, then return to this menu",
-                                      buttons=['Okay', 'Cancel'])
-
-            if confirmation is None:
-                return 0
-            elif confirmation == 'Cancel':
-                return 10
-            elif confirmation == 'Okay':
-                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-            else:
-                return 10
-
-
-
-    except Exception as e:
-        py.alert(text="Something went wrong and files couldn't be exported \n\nError: " + str(e), title='PeaPass')
-        return 10
+    thisDirectory = directory.replace('\\', '/')
+    copyfile(thisDirectory, filename)
 
     py.alert(text="Database should be exported to " + filename, title='PeaPass')
 
