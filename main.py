@@ -1,7 +1,9 @@
 # Misc imports
 import os
 import pyautogui as py
-import subprocess
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename, askdirectory
+from shutil import copyfile
 
 # Modules for passwordToKey()
 import base64
@@ -840,6 +842,65 @@ def deleteDatabase():
     return exitCode
 
 
+
+
+def exportDatabase():
+
+    confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
+
+    if confirmation == None:
+        return 0
+    elif confirmation == 'OK':
+        # Passes to exit the elif chain
+        pass
+    else:
+        return 10
+
+    #Gets path for export
+    Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+    filename = askdirectory()
+
+    if filename is None:
+        py.alert(text='No destination selected', title='PeaPass')
+        return 10
+
+    if not os.path.exists(filename):
+        py.alert(text='Something went wrong: path does not exist', title='PeaPass')
+        return 10
+
+
+    try:
+
+        import ctypes, sys
+
+        def is_admin():
+            try:
+                return ctypes.windll.shell32.IsUserAnAdmin()
+            except:
+                return False
+
+        if is_admin():
+            pass
+        # Code of your program here
+        else:
+            # Re-run the program with admin rights
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+
+
+        thisDirectory = directory.replace('\\', '/')
+        print(thisDirectory)
+        print(filename)
+        copyfile(thisDirectory, filename)
+
+    except Exception as e:
+        py.alert(text="Something went wrong and files couldn't be exported \n\nError: " + str(e), title='PeaPass')
+        return 10
+
+    py.alert(text="Database should be exported to " + filename, title='PeaPass')
+
+    return 10
+
+
 def databaseOptions():
     """
     Starts database options
@@ -848,13 +909,15 @@ def databaseOptions():
 
     # Gets mode from user
     mode = py.confirm(text='What would you like to do?', title='PeaPass',
-                      buttons=['Delete database', 'Export database', 'Cancel'])
+                      buttons=['Delete database', 'Cancel'])
 
     exitCode = 1
 
     # Calls respective modes
     if mode == 'Delete database':
         exitCode = deleteDatabase()
+    if mode == 'Export database':
+        exitCode = exportDatabase()
 
     return exitCode
 
@@ -908,7 +971,7 @@ def GUI():
 
     # Deletes inPassword variable &
     # overwrites it to
-    # prevent longterm storage of
+    # prevent long-term storage of
     # plaintext password
     nuke(inPassword)
     del inPassword

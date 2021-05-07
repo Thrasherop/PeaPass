@@ -22,13 +22,14 @@ under the "directory" variable.
 ## Dependencies
 <br>
 There's a few Python Modules that this software requires. Namely, it needs
-the cryptography, argon2, bcrypt, and pyautogui. To install these via pip,
+the cryptography, argon2, bcrypt, tkinter, and pyautogui. To install these via pip,
 run the following lines in the command line:
 <br><br>
 pip3 install cryptography <br>
 pip3 install argon2-cffi <br>
 pip3 install bcrypt <br>
 pip3 install pyautogui <br> 
+pip3 install tk <br>
 
 ## Security details
 PeaPass uses the ARGON2-ID hashing algorithm to store the master password. 
