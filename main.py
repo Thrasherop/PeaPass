@@ -4,6 +4,7 @@ import os
 import hashlib
 import pyautogui as py
 from time import sleep
+import subprocess
 
 # Modules for passwordToKey()
 import base64
@@ -24,6 +25,7 @@ import bcrypt
 import sys
 import ctypes
 
+
 # Tutorial: https://nitratine.net/blog/post/encryption-and-decryption-in-python/
 
 directory = "C:\\.PeaPass\\"
@@ -38,7 +40,6 @@ def nuke(var_to_nuke):
     strlen = len(var_to_nuke)
     offset = sys.getsizeof(var_to_nuke) - strlen - 1
     ctypes.memset(id(var_to_nuke) + offset, 0, strlen)
-    # del var_to_nuke
 
 
 def nukeDatabase():
@@ -149,7 +150,7 @@ def decrypt(key, string):
         fernetObj = Fernet(key)
         decrypted = fernetObj.decrypt(message)
     except Exception as e:
-        return 255
+        return str(e)
 
     # Decrypts the bytes string
     # so that a string is returned
@@ -323,10 +324,6 @@ def login():
 
     key = passToKey(inPassword)
 
-    # Nukes the inPassword
-    ##nuke(inPassword)
-    # del inPassword
-
     return key
 
 
@@ -348,9 +345,7 @@ def addPassword():
     else:
         key = loginCode
 
-    # Nukes key and loginCode
-    # nuke(loginCode)
-    # del loginCode
+
 
     # Gets the Keyword & gets an encrypted version
     keyword = py.prompt(title='Input keyword',
@@ -404,12 +399,12 @@ def addPassword():
                 return 0
 
     # Nukes keyword
-    # nuke(keyword)
-    # del keyword
+    nuke(keyword)
+    del keyword
 
     # Nukes pass2 cause its no longer needed
-    # nuke(pass2)
-    # del pass2
+    nuke(pass2)
+    del pass2
 
     # Encrypts the password and then
     # writes it to its file in database
@@ -418,11 +413,11 @@ def addPassword():
     enPass = encrypt(key, pass1)
 
     # nukes pass1 and key
-    # nuke(pass1)
-    # del pass1
+    nuke(pass1)
+    del pass1
 
-    # nuke(key)
-    # del key
+    nuke(key)
+    del key
 
     with open(directory + enKeyword + ".peapass", "w+") as f:
         f.write(enPass)
@@ -433,6 +428,11 @@ def addPassword():
     # Exits program if user closed the tab
     if exitCode == None:
         return 0
+
+    # Nukes loginCode
+    # NEW NUKE
+    nuke(loginCode)
+    del loginCode
 
 
 def accessPassword():
@@ -453,9 +453,6 @@ def accessPassword():
     else:
         key = loginCode
 
-    # Nukes logincode
-    # nuke(loginCode)
-    # del loginCode
 
     # Gets keyword from user
     while True:
@@ -482,9 +479,9 @@ def accessPassword():
         else:
             break
 
-            # Nukes keyword
-    # nuke(keyword)
-    # del keyword
+    # Nukes keyword
+    nuke(keyword)
+    del keyword
 
     # Opens keyword file and
     # reads in encrypted password
@@ -496,29 +493,40 @@ def accessPassword():
                            text='Your password will be shown on screen. Make sure nobody else can see your screen and that no screen recording software is active',
                            buttons=['Continue', 'Cancel'])
 
+
+    # NEW NUKES
+    # Nukes logincode
+    # NEW NUKE
+
     if usrChoice == None:
         # Nukes sensitive variables
-        # nuke(enPass)
-        # nuke(key)
-        # del key
-        # del enPass
+        nuke(enPass)
+        nuke(key)
+        del key
+        del enPass
+        nuke(loginCode)
+        del loginCode
         return 0
     elif usrChoice == 'Cancel':
         # Nukes sensitive variables
-        # nuke(enPass)
-        # nuke(key)
-        # del key
-        # del enPass
+        nuke(enPass)
+        nuke(key)
+        del key
+        del enPass
+        nuke(loginCode)
+        del loginCode
         return 10
     elif usrChoice == 'Continue':
         dePass = decrypt(key, enPass)
         py.alert(title='PeaPass', text='Password: ' + dePass, button='Done')
 
         # Nukes sensitive variables
-        # nuke(enPass)
-        # nuke(key)
-        # del key
-        # del enPass
+        nuke(enPass)
+        nuke(key)
+        del key
+        del enPass
+        nuke(loginCode)
+        del loginCode
 
         return 10
 
@@ -540,11 +548,7 @@ def changePassword():
     else:
         key = loginCode
 
-    # Nukes key and loginCode
-    # nuke(loginCode)
-    # del loginCode
-    # nuke(key)
-    # del key
+
 
     # Gets keyword from user
     while True:
@@ -571,9 +575,7 @@ def changePassword():
         else:
             break
 
-            # Nukes keyword
-    # nuke(keyword)
-    # del keyword
+
 
     # Gets new password and confirms it
     while True:
@@ -623,10 +625,20 @@ def changePassword():
         return 10
 
     # Nukes the plainText passwords
-    # nuke(pass1)
-    # nuke(pass2)
-    # del pass1
-    # del pass2
+    nuke(pass1)
+    nuke(pass2)
+    del pass1
+    del pass2
+
+    # Nukes key and loginCode
+    nuke(loginCode)
+    del loginCode
+    nuke(key)
+    del key
+
+    # Nukes keyword
+    nuke(keyword)
+    del keyword
 
 
 def removePassword():
@@ -645,11 +657,6 @@ def removePassword():
     else:
         key = loginCode
 
-    # Nukes key and loginCode
-    # nuke(loginCode)
-    # del loginCode
-    # nuke(key)
-    # del key
 
     # Gets user keyword
     while True:
@@ -686,9 +693,17 @@ def removePassword():
     elif answer == None:
         return 0
     elif answer == 'Delete it':
-        os.system("del C:\\PeaPass\\" + enKeyword + ".peapass")
+        os.system("del " + directory + enKeyword + ".peapass")
         py.alert(title="Password deleted", text='Password has been deleted')
         return 10
+
+    # Nukes key and loginCode
+    nuke(loginCode)
+    del loginCode
+    nuke(key)
+    del key
+    nuke(keyword)
+    del keyword
 
 
 def verifyDataBase():
@@ -742,11 +757,15 @@ def verifyDataBase():
         with open(directory + "master.peapass", "w+") as f:
             f.write(masterHash)
 
-        # Nukes pass1 and pass2
-        # nuke(pass1)
-        # nuke(pass2)
-        # del pass1
-        # del pass2
+    # Nukes pass1 and pass2 if they exist
+
+    if 'pass1' in locals():
+        nuke(pass1)
+        del pass1
+
+    if 'pass2' in locals():
+        nuke(pass2)
+        del pass2
 
 
 def deleteDatabase():
@@ -784,11 +803,6 @@ def deleteDatabase():
     else:
         key = loginCode
 
-    # Nukes key and loginCode
-    # nuke(key)
-    # del key
-    # nuke(loginCode)
-    # del loginCode
 
     # Confirms yet again
     confirmation = py.confirm(
@@ -821,6 +835,13 @@ def deleteDatabase():
 
     # Performs the database nuke
     exitCode = nukeDatabase()
+
+    # Nukes key and loginCode
+    nuke(key)
+    del key
+    nuke(loginCode)
+    del loginCode
+
     return exitCode
 
 
@@ -894,8 +915,8 @@ def GUI():
     # overwrites it to
     # prevent longterm storage of
     # plaintext password
-    # nuke(inPassword)
-    # del inPassword
+    nuke(inPassword)
+    del inPassword
 
     # Manages user menu
     while True:
