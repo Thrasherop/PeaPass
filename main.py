@@ -3,7 +3,7 @@ import os
 import pyautogui as py
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
-from shutil import copyfile
+from shutil import copy
 import ctypes, sys
 
 # Modules for passwordToKey()
@@ -414,8 +414,6 @@ def addPassword():
 
     # Encrypts the password and then
     # writes it to its file in database
-    print(key)
-    print(type(key))
     enPass = encrypt(key, pass1)
 
     # nukes pass1 and key
@@ -851,131 +849,6 @@ def deleteDatabase():
     return exitCode
 
 
-def exportDatabase():
-
-    print('export called')
-
-    try:
-
-        print('inside try')
-        if is_admin():
-            print('is admin')
-            pass
-
-        # Code of your program here
-        else:
-
-            print('not admin')
-
-            # Re-run the program with admin rights
-            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
-                                                            "select allow when prompted, then return to this menu",
-                                      buttons=['Okay', 'Cancel'])
-
-            if confirmation is None:
-                return 0
-            elif confirmation == 'Cancel':
-                return 10
-            elif confirmation == 'Okay':
-                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-                return 0
-            else:
-                return 10
-
-    except Exception as e:
-        py.alert(title='PeaPass', text='Could not export files: \n\nError: ' + str(e))
-        return 10
-
-
-
-    confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
-
-    if confirmation == None:
-        return 0
-    elif confirmation == 'OK':
-        # Passes to exit the elif chain
-        pass
-    else:
-        return 10
-
-    #Gets path for export
-    Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
-    filename = askdirectory()
-
-    if filename is None:
-        py.alert(text='No destination selected', title='PeaPass')
-        return 10
-
-    if not os.path.exists(filename):
-        py.alert(text='Something went wrong: path does not exist', title='PeaPass')
-        return 10
-
-    thisDirectory = directory.replace('\\', '/')
-    copyfile(thisDirectory, filename)
-
-    py.alert(text="Database should be exported to " + filename, title='PeaPass')
-
-    return 10
-
-
-def exportDatabase():
-
-    confirmation = py.alert(text='Please select where you would like the files to be exported', title='PeaPass')
-
-    if confirmation == None:
-        return 0
-    elif confirmation == 'OK':
-        # Passes to exit the elif chain
-        pass
-    else:
-        return 10
-
-    #Gets path for export
-    Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
-    filename = askdirectory()
-
-    if filename is None:
-        py.alert(text='No destination selected', title='PeaPass')
-        return 10
-
-    if not os.path.exists(filename):
-        py.alert(text='Something went wrong: path does not exist', title='PeaPass')
-        return 10
-
-
-    try:
-
-        if is_admin():
-            thisDirectory = directory.replace('\\', '/')
-            copyfile(thisDirectory, filename)
-
-        # Code of your program here
-        else:
-            # Re-run the program with admin rights
-            confirmation = py.confirm(title='PeaPass', text="PeaPass must restart with admin access. Please "
-                                                            "select allow when prompted, then return to this menu",
-                                      buttons=['Okay', 'Cancel'])
-
-            if confirmation is None:
-                return 0
-            elif confirmation == 'Cancel':
-                return 10
-            elif confirmation == 'Okay':
-                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-            else:
-                return 10
-
-
-
-    except Exception as e:
-        py.alert(text="Something went wrong and files couldn't be exported \n\nError: " + str(e), title='PeaPass')
-        return 10
-
-    py.alert(text="Database should be exported to " + filename, title='PeaPass')
-
-    return 10
-
-
 def databaseOptions():
     """
     Starts database options
@@ -992,7 +865,8 @@ def databaseOptions():
     if mode == 'Delete database':
         exitCode = deleteDatabase()
     if mode == 'Export database':
-        exitCode = exportDatabase()
+        #exitCode = exportDatabase()
+        pass
 
     return exitCode
 
