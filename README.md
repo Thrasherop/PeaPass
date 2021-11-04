@@ -41,7 +41,7 @@ The parameters for the hashing are as follows: <br> <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;salt_len=16
 
 These parameters in ARGON2-ID should be more than sufficient to protect 
-against mojirty (if not all) real world brute force, dictionary, or rainbow table attacks.
+against majority (if not all) real world brute force, dictionary, or rainbow table attacks.
 Argon2 essentially does this by requiring certain amounts of resources for 
 every hash, such as requiring ~104 MB per hash. This is simply too expensive
 for hash cracking. For more details, [See the documentation on argon2](https://argon2-cffi.readthedocs.io/en/stable/parameters.html)
